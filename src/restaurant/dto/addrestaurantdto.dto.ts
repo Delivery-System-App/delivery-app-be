@@ -23,6 +23,10 @@ export class RestaurantregisterDto {
   timings: any;
 
   @ApiProperty({ example: null })
+  @IsString()
+  openStatus: any;
+
+  @ApiProperty({ example: null })
   @IsNumber()
   location: number;
 }

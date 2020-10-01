@@ -37,6 +37,9 @@ export class Restaurant {
   location: string;
 
   @Column({ nullable: true })
+  openStatus: any;
+
+  @Column({ nullable: true })
   lastLogin: Date;
 
   @CreateDateColumn()

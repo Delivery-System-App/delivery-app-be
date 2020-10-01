@@ -17,6 +17,7 @@ export class RestaurantRepository extends MongoRepository<Restaurant> {
       photos,
       location,
       timings,
+      openStatus,
     } = restaurantregisterDto;
     const restaurant = new Restaurant();
     restaurant.name = name.toLowerCase();
@@ -25,6 +26,7 @@ export class RestaurantRepository extends MongoRepository<Restaurant> {
     restaurant.ownerID = id;
     restaurant.photos = photos;
     restaurant.status = 'ACTIVE';
+    restaurant.openStatus = openStatus;
     restaurant.location = location.toLowerCase();
     restaurant.noofdishes = 0;
     restaurant.totaldishprice = 0;
@@ -79,22 +81,18 @@ export class RestaurantRepository extends MongoRepository<Restaurant> {
     console.log(restaurant);
     return restaurant;
   }
-  async addReview(
-    reviews: AddReviews, user: User,resid
-  ): Promise<any> {
-    
+  async addReview(reviews: AddReviews, user: User, resid): Promise<any> {
     const restaurant = await this.findOne(ObjectId(resid));
-    console.log(restaurant)
-      reviews['reviewId'] = new ObjectID();
-      reviews['userId'] = user.id;
-      if (restaurant.review){
-        restaurant.review.push(reviews);
-      }
-      else {
-        restaurant.review=[reviews];
-      }
-   
-    console.log(reviews)
+    console.log(restaurant);
+    reviews['reviewId'] = new ObjectID();
+    reviews['userId'] = user.id;
+    if (restaurant.review) {
+      restaurant.review.push(reviews);
+    } else {
+      restaurant.review = [reviews];
+    }
+
+    console.log(reviews);
 
     await this.save(restaurant);
     console.log(restaurant);

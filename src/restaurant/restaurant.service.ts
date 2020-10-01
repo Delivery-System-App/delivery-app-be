@@ -166,6 +166,9 @@ export class RestaurantService {
         if (data.photos) {
           restaurant.photos = data.photos;
         }
+
+        restaurant.openStatus = data.openStatus;
+
         await this.restaurantRepository.save(restaurant);
         const { ...result } = restaurant;
         return {
@@ -201,13 +204,15 @@ export class RestaurantService {
     console.log(resname);
     if (resname) {
       resname.toLowerCase();
-      restaurantname = await this.restaurantRepository.find({ name: resname.toLowerCase() });
+      restaurantname = await this.restaurantRepository.find({
+        name: resname.toLowerCase(),
+      });
       restaurant = _.intersectionWith(restaurant, restaurantname, _.isEqual);
 
       //restauranttest = restaurant.map((item, i) => Object.assign({}, item, restaurantname[i]));
     }
     if (location) {
-      location.toLowerCase()
+      location.toLowerCase();
       restaurantlocation = await this.restaurantRepository.find({
         location: location.toLowerCase(),
       });
@@ -223,7 +228,7 @@ export class RestaurantService {
       //console.log(menudish)
       for (var i = 0; i < menudish.length; i++) {
         for (var j = 0; j < menudish[i].dishes.length; j++) {
-          if (menudish[i].dishes[j].name=== dish.toLowerCase()) {
+          if (menudish[i].dishes[j].name === dish.toLowerCase()) {
             restaurantdish = await this.restaurantRepository.findOne(
               ObjectId(menudish[i].restaurantId),
             );
@@ -334,33 +339,28 @@ export class RestaurantService {
     }
   }
 
-  async addReview( review: AddReviews, user: User,resid): Promise<any> {
+  async addReview(review: AddReviews, user: User, resid): Promise<any> {
     try {
       console.log(user);
-       
-        return this.restaurantRepository.addReview( review,user,resid);
+
+      return this.restaurantRepository.addReview(review, user, resid);
     } catch (e) {
       throw new HttpException({ message: e }, HttpStatus.BAD_REQUEST);
     }
   }
 
   async getRestaurantReview(user: User, id): Promise<any> {
-    
     try {
-      
       var restaurant = await this.restaurantRepository.findOne(ObjectId(id));
       const length = restaurant.review.length;
-      for (var i=0;i<length;i++)
-      {
-      const user = await this.userRepository.findOne(ObjectId(restaurant.review[i].userId));
-     restaurant.review[i]['username'] = user.name;
-      
+      for (var i = 0; i < length; i++) {
+        const user = await this.userRepository.findOne(
+          ObjectId(restaurant.review[i].userId),
+        );
+        restaurant.review[i]['username'] = user.name;
       }
-      
+
       return restaurant.review;
-      
-      
     } catch (e) {}
   }
-
 }
