@@ -187,7 +187,7 @@ export class RestaurantService {
   async filterrestaurant(
     restaurantfilterdto: RestaurantFilterDto,
   ): Promise<any> {
-    const { resname, dish, location, rating } = restaurantfilterdto;
+    const {  dish, location, rating } = restaurantfilterdto;
     let restaurantname,
       restaurantlocation,
       menudish,
@@ -199,9 +199,8 @@ export class RestaurantService {
     var restauranttest = [];
     const _ = require('lodash');
 
-    console.log(resname, dish, location, rating);
 
-    console.log(resname);
+    /*console.log(resname);
     if (resname) {
       resname.toLowerCase();
       restaurantname = await this.restaurantRepository.find({
@@ -210,7 +209,7 @@ export class RestaurantService {
       restaurant = _.intersectionWith(restaurant, restaurantname, _.isEqual);
 
       //restauranttest = restaurant.map((item, i) => Object.assign({}, item, restaurantname[i]));
-    }
+    }*/
     if (location) {
       location.toLowerCase();
       restaurantlocation = await this.restaurantRepository.find({
@@ -224,6 +223,14 @@ export class RestaurantService {
     }
     if (dish) {
       dish.toLowerCase();
+      restaurantname = await this.restaurantRepository.find({
+        name: dish.toLowerCase(),
+      });
+      console.log(restaurantname)
+      if (restaurantname.length!= 0){
+      restaurant = _.intersectionWith(restaurant, restaurantname, _.isEqual);}
+      else{
+        console.log("check")
       menudish = await this.menuRepository.find();
       //console.log(menudish)
       for (var i = 0; i < menudish.length; i++) {
@@ -238,6 +245,7 @@ export class RestaurantService {
       }
       restaurant = _.intersectionWith(restaurant, restauranttest, _.isEqual);
     }
+  }
     if (rating) {
       restaurantrating = await this.restaurantRepository.find({
         rating: rating,
