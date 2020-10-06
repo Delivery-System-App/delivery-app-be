@@ -3,7 +3,7 @@
 /node_modules
 /keys.js
 /.env
-
+/env
 # Logs
 logs
 *.log

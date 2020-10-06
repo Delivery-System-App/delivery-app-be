@@ -4,7 +4,12 @@ import { CreateBookingDto } from './dto';
 import { User } from 'src/auth/entities/User.entity';
 import { MenuRepository } from 'src/menu/menu.repository';
 const ObjectId = require('mongodb').ObjectID;
-
+const Razorpay = require('razorpay');
+require('dotenv').config();
+var razorPay = new Razorpay({
+  key_id: process.env.RazorKey,
+  key_secret: process.env.RazorKeySecret,
+});
 @EntityRepository(Booking)
 export class BookingRepository extends MongoRepository<Booking> {
   async createBooking(
@@ -41,11 +46,31 @@ export class BookingRepository extends MongoRepository<Booking> {
           }
         }
       }
-      booking.payStatus = 'Pending';
-      booking.paymentDetail = null;
-      booking.deliveryId = null;
-      booking.deliveryStatus = 'Pending';
-      await this.save(booking);
+      const payment_capture = 1;
+      const currency = 'INR';
+      const options = {
+        amount: booking.totalAmount * 100,
+        currency,
+        receipt: booking.bookId,
+        payment_capture,
+      };
+      try {
+        const response = await razorPay.orders.create(options);
+        console.log(response);
+        booking.payStatus = 'Pending';
+        booking.paymentDetail = null;
+        booking.deliveryId = null;
+        booking.deliveryStatus = 'Pending';
+        await this.save(booking);
+        return {
+          id: response.id,
+          currency: response.currency,
+          amount: response.amount,
+        };
+      } catch (error) {
+        console.log(error);
+      }
+
       return booking;
     } else {
       return 'no menu';

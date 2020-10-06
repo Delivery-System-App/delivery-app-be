@@ -6,7 +6,7 @@ import {
   UseGuards,
   Req,
   Post,
-  Body
+  Body, Res
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { BookingService } from './booking.service';
@@ -83,5 +83,13 @@ export class BookingController {
   generateItemReport(@Req() req,@Param('resId') id:string,@Body() dateRangeDto:DateRangeDto){
     this.logger.verbose('generate item sales report')
     return this.bookingService.generateItemsReport(req.user,id,dateRangeDto);
+  }
+
+  @Post('verification')
+  verifypayment(@Req() req,@Res() res){
+    this.logger.verbose(req.body);
+    res.json({status: 'ok'});
+    console.log(req.body);
+    return this.bookingService.verify(req);
   }
 }

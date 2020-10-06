@@ -300,4 +300,19 @@ export class BookingService {
       }
     }
   }
+  async verify(req:Request):Promise<any>{
+    const secret = process.env.Secret;
+    const crypto = require('crypto')
+
+    console.log(req.body);
+	  const shasum = crypto.createHmac('sha256', secret)
+	  shasum.update(JSON.stringify(req.body))
+	  const digest = shasum.digest('hex')
+
+	  console.log(digest, req.headers['x-razorpay-signature'])
+
+	  if (digest === req.headers['x-razorpay-signature']) {
+      console.log('request is legit');
+    }
+}
 }
